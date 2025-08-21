@@ -10,7 +10,7 @@ import random
 import requests
 from datetime import datetime, timedelta
 
-from .models import Prediction, SavedScenario
+from .models import Prediction
 from .services.model import predictor
 
 
@@ -203,9 +203,6 @@ def dashboard_view(request):
     # Get user's recent predictions
     recent_predictions = Prediction.objects.filter(user=request.user)[:10]
     
-    # Get saved scenarios
-    saved_scenarios = SavedScenario.objects.filter(user=request.user)[:5]
-    
     # Calculate congestion statistics based on actual predictions
     all_user_predictions = Prediction.objects.filter(user=request.user)
     total_predictions = all_user_predictions.count()
@@ -218,7 +215,6 @@ def dashboard_view(request):
     
     context = {
         'recent_predictions': recent_predictions,
-        'saved_scenarios': saved_scenarios,
         'chart_data': chart_data,
         'total_predictions': total_predictions,
         'low_congestion': low_congestion,
@@ -276,38 +272,3 @@ def register_view(request):
     return render(request, 'predictor/register.html', {'form': form})
 
 
-@login_required
-def save_scenario(request):
-    """Save a prediction scenario"""
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        city = request.POST.get('city')
-        source = request.POST.get('source')
-        destination = request.POST.get('destination')
-        
-        if name and city and source and destination:
-            SavedScenario.objects.create(
-                user=request.user,
-                name=name,
-                city=city,
-                source=source,
-                destination=destination
-            )
-            messages.success(request, 'Scenario saved successfully!')
-        else:
-            messages.error(request, 'Please fill in all fields.')
-    
-    return redirect('dashboard')
-
-
-@login_required
-def delete_scenario(request, scenario_id):
-    """Delete a saved scenario"""
-    try:
-        scenario = SavedScenario.objects.get(id=scenario_id, user=request.user)
-        scenario.delete()
-        messages.success(request, 'Scenario deleted successfully!')
-    except SavedScenario.DoesNotExist:
-        messages.error(request, 'Scenario not found.')
-    
-    return redirect('dashboard')

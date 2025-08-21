@@ -41,20 +41,24 @@
                     </div>
 
                     <!-- Source -->
-                    <div>
+                    <div class="relative">
                         <label for="source" class="block text-sm font-medium text-gray-700 mb-2">Source</label>
                         <input type="text" name="source" id="source" required
                             placeholder="Enter source location (e.g., Connaught Place, Delhi)"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            autocomplete="off">
+                        <div id="source-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto hidden shadow-lg"></div>
                     </div>
 
                     <!-- Destination -->
-                    <div>
+                    <div class="relative">
                         <label for="destination"
                             class="block text-sm font-medium text-gray-700 mb-2">Destination</label>
                         <input type="text" name="destination" id="destination" required
                             placeholder="Enter destination location (e.g., Aerocity, Delhi)"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            autocomplete="off">
+                        <div id="destination-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto hidden shadow-lg"></div>
                     </div>
 
                     <!-- Submit Button -->
@@ -160,18 +164,11 @@
     {% if show_result %}
     <!-- Charts and Maps Section -->
     <div class="mt-12 space-y-8">
-        <!-- Charts Row -->
-        <div class="grid lg:grid-cols-2 gap-8">
-            <!-- Prediction Probability Chart -->
-            <div class="bg-white rounded-2xl p-8 card-shadow">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Prediction Confidence</h3>
-                <canvas id="probabilityChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Hourly Trend Chart -->
-            <div class="bg-white rounded-2xl p-8 card-shadow">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">Hourly Congestion Trend</h3>
-                <canvas id="trendChart" width="400" height="200"></canvas>
+        <!-- Hourly Trend Chart - Full Width -->
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Hourly Congestion Trend</h3>
+            <div style="height: 400px; width: 100%;">
+                <canvas id="trendChart"></canvas>
             </div>
         </div>
 
@@ -207,46 +204,15 @@
 {% if show_result %}
 <script>
     // Chart.js configurations
-    const ctx1 = document.getElementById('probabilityChart').getContext('2d');
     const ctx2 = document.getElementById('trendChart').getContext('2d');
 
-    // Probability Chart
-    const probabilityChart = new Chart(ctx1, {
-        type: 'pie',
-        data: {
-            labels: ['Low', 'Medium', 'High'],
-            datasets: [{
-                data: {{ result.probabilities|safe }},
-                backgroundColor: [
-                    'rgba(34, 197, 94, 0.8)',
-                    'rgba(251, 191, 36, 0.8)',
-                    'rgba(239, 68, 68, 0.8)'
-                ],
-                borderColor: [
-                    'rgba(34, 197, 94, 1)',
-                    'rgba(251, 191, 36, 1)',
-                    'rgba(239, 68, 68, 1)'
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-
-    // Trend Chart
+    // Trend Chart - Enhanced for full width
     const trendChart = new Chart(ctx2, {
         type: 'line',
         data: {
             labels: Array.from({ length: 24 }, (_, i) => i + ':00'),
             datasets: [{
-                label: 'Congestion Level',
+                label: 'Congestion Level (%)',
                 data: Array.from({ length: 24 }, (_, i) => {
                     if ((i >= 8 && i <= 10) || (i >= 17 && i <= 19)) return Math.random() * 30 + 70;
                     if ((i >= 7 && i <= 11) || (i >= 16 && i <= 20)) return Math.random() * 20 + 50;
@@ -255,15 +221,36 @@
                 borderColor: 'rgba(59, 130, 246, 1)',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 tension: 0.4,
-                fill: true
+                fill: true,
+                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Congestion Level (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Hour of Day'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
                 }
             }
         }
@@ -354,4 +341,123 @@
     });
 </script>
 {% endif %}
+
+<script>
+// Location autocomplete functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const sourceInput = document.getElementById('source');
+    const destinationInput = document.getElementById('destination');
+    const citySelect = document.getElementById('city');
+    const sourceSuggestions = document.getElementById('source-suggestions');
+    const destinationSuggestions = document.getElementById('destination-suggestions');
+
+    // Popular locations for each city
+    const cityLocations = {
+        'Delhi': [
+            'Connaught Place', 'India Gate', 'Red Fort', 'Qutub Minar', 'Lotus Temple',
+            'Akshardham Temple', 'Chandni Chowk', 'Karol Bagh', 'Lajpat Nagar',
+            'Saket', 'Vasant Kunj', 'Dwarka', 'Rohini', 'Pitampura', 'Janakpuri',
+            'Rajouri Garden', 'Tilak Nagar', 'Laxmi Nagar', 'Preet Vihar', 'Mayur Vihar',
+            'Noida Sector 18', 'Gurgaon Cyber City', 'Aerocity', 'IGI Airport',
+            'New Delhi Railway Station', 'Old Delhi Railway Station', 'ISBT Kashmere Gate'
+        ],
+        'Mumbai': [
+            'Gateway of India', 'Marine Drive', 'Juhu Beach', 'Bandra-Kurla Complex',
+            'Andheri', 'Powai', 'Thane', 'Navi Mumbai', 'Colaba', 'Fort',
+            'Churchgate', 'CST Station', 'Dadar', 'King Circle', 'Sion',
+            'Kurla', 'Ghatkopar', 'Mulund', 'Borivali', 'Malad', 'Goregaon',
+            'Jogeshwari', 'Vile Parle', 'Santa Cruz', 'Khar', 'Bandra'
+        ],
+        'Bengaluru': [
+            'MG Road', 'Brigade Road', 'Commercial Street', 'Koramangala',
+            'Indiranagar', 'Whitefield', 'Electronic City', 'Silk Board',
+            'Marathahalli', 'Bellandur', 'HSR Layout', 'BTM Layout',
+            'Jayanagar', 'Basavanagudi', 'Malleshwaram', 'Rajajinagar',
+            'Yeshwantpur', 'Hebbal', 'Airport Road', 'Sarjapur Road'
+        ],
+        'Hyderabad': [
+            'Charminar', 'Hussain Sagar', 'Banjara Hills', 'Jubilee Hills',
+            'HITEC City', 'Gachibowli', 'Kondapur', 'Madhapur', 'Kukatpally',
+            'Secunderabad', 'Begumpet', 'Ameerpet', 'Somajiguda', 'Abids',
+            'Koti', 'Dilsukhnagar', 'LB Nagar', 'Uppal', 'Kompally'
+        ],
+        'Chennai': [
+            'Marina Beach', 'T. Nagar', 'Anna Nagar', 'Adyar', 'Velachery',
+            'OMR', 'ECR', 'Porur', 'Tambaram', 'Chrompet', 'Guindy',
+            'Nungambakkam', 'Egmore', 'Central Station', 'Airport',
+            'Sholinganallur', 'Perungudi', 'Thoraipakkam', 'Besant Nagar'
+        ],
+        'Kolkata': [
+            'Victoria Memorial', 'Howrah Bridge', 'Park Street', 'New Market',
+            'Esplanade', 'Sealdah', 'Howrah Station', 'Salt Lake', 'New Town',
+            'Rajarhat', 'Ballygunge', 'Gariahat', 'Rashbehari', 'Jadavpur',
+            'Tollygunge', 'Behala', 'Garia', 'Barasat', 'Dum Dum'
+        ]
+    };
+
+    function showSuggestions(input, suggestionsDiv, query) {
+        const selectedCity = citySelect.value;
+        if (!selectedCity || query.length < 2) {
+            suggestionsDiv.classList.add('hidden');
+            return;
+        }
+
+        const locations = cityLocations[selectedCity] || [];
+        const filteredLocations = locations.filter(location => 
+            location.toLowerCase().includes(query.toLowerCase())
+        );
+
+        if (filteredLocations.length === 0) {
+            suggestionsDiv.classList.add('hidden');
+            return;
+        }
+
+        suggestionsDiv.innerHTML = filteredLocations.map(location => 
+            `<div class="px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0" 
+                 onclick="selectLocation('${input.id}', '${location}')">${location}, ${selectedCity}</div>`
+        ).join('');
+
+        suggestionsDiv.classList.remove('hidden');
+    }
+
+    function selectLocation(inputId, location) {
+        const input = document.getElementById(inputId);
+        const selectedCity = citySelect.value;
+        input.value = `${location}, ${selectedCity}`;
+        
+        const suggestionsDiv = document.getElementById(`${inputId}-suggestions`);
+        suggestionsDiv.classList.add('hidden');
+    }
+
+    // Make selectLocation globally available
+    window.selectLocation = selectLocation;
+
+    // Add event listeners
+    sourceInput.addEventListener('input', function() {
+        showSuggestions(sourceInput, sourceSuggestions, this.value);
+    });
+
+    destinationInput.addEventListener('input', function() {
+        showSuggestions(destinationInput, destinationSuggestions, this.value);
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!sourceInput.contains(e.target) && !sourceSuggestions.contains(e.target)) {
+            sourceSuggestions.classList.add('hidden');
+        }
+        if (!destinationInput.contains(e.target) && !destinationSuggestions.contains(e.target)) {
+            destinationSuggestions.classList.add('hidden');
+        }
+    });
+
+    // Clear suggestions when city changes
+    citySelect.addEventListener('change', function() {
+        sourceSuggestions.classList.add('hidden');
+        destinationSuggestions.classList.add('hidden');
+        sourceInput.value = '';
+        destinationInput.value = '';
+    });
+});
+</script>
 {% endblock %}
