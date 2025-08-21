@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+
+{% block title %}Predict Traffic - Traffic Congestion Predictor{% endblock %}
+
+{% block extra_head %}
+<!-- Folium CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Folium JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Traffic Congestion Predictor
+        </h1>
+        <p class="text-xl text-gray-600">
+            Enter your journey details to get accurate traffic predictions
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Input Card -->
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Journey Details</h2>
+
+            <form method="post" id="predictForm">
+                {% csrf_token %}
+                <div class="space-y-6">
+                    <!-- City Selection -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <select name="city" id="city" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select a city</option>
+                            {% for city in cities %}
+                            <option value="{{ city }}">{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Source -->
+                    <div>
+                        <label for="source" class="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                        <input type="text" name="source" id="source" required
+                            placeholder="Enter source location (e.g., Connaught Place, Delhi)"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Destination -->
+                    <div>
+                        <label for="destination"
+                            class="block text-sm font-medium text-gray-700 mb-2">Destination</label>
+                        <input type="text" name="destination" id="destination" required
+                            placeholder="Enter destination location (e.g., Aerocity, Delhi)"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Predict Traffic
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Card -->
+        {% if show_result %}
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Prediction Results</h2>
+
+            <!-- Congestion Level Badge -->
+            <div class="mb-6">
+                <div class="text-sm text-gray-600 mb-2">Congestion Level</div>
+                <div class="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold
+                    {% if prediction.congestion_level == 'Low' %}bg-green-100 text-green-800
+                    {% elif prediction.congestion_level == 'Medium' %}bg-yellow-100 text-yellow-800
+                    {% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ prediction.congestion_level }} Congestion
+                </div>
+            </div>
+
+            <!-- Suggested Mode -->
+            <div class="mb-6">
+                <div class="text-sm text-gray-600 mb-2">Recommended Transport</div>
+                <div class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {% if prediction.suggested_mode == 'Car' %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                        {% elif prediction.suggested_mode == 'Metro' %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        {% elif prediction.suggested_mode == 'Bike' %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        {% else %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        {% endif %}
+                    </svg>
+                    {{ prediction.suggested_mode }}
+                </div>
+            </div>
+
+            <!-- Journey Details -->
+            <div class="mb-6">
+                <div class="text-sm text-gray-600 mb-2">Journey Details</div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="font-medium">Distance:</span> {{ prediction.distance_km|floatformat:1 }} km
+                        </div>
+                        <div>
+                            <span class="font-medium">Time:</span> {{ prediction.hour }}:00
+                        </div>
+                        <div>
+                            <span class="font-medium">Weather:</span> {{ prediction.weather }}
+                        </div>
+                        <div>
+                            <span class="font-medium">Day Type:</span> {{ prediction.day_type|title }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex space-x-4">
+                <button onclick="showMap()"
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    View Map
+                </button>
+                <button onclick="downloadPDF()"
+                    class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300">
+                    Download PDF
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <div class="text-center text-gray-500">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3">
+                    </path>
+                </svg>
+                <p class="text-lg">Enter your journey details to see predictions</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if show_result %}
+    <!-- Charts and Maps Section -->
+    <div class="mt-12 space-y-8">
+        <!-- Charts Row -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Prediction Probability Chart -->
+            <div class="bg-white rounded-2xl p-8 card-shadow">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Prediction Confidence</h3>
+                <canvas id="probabilityChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Hourly Trend Chart -->
+            <div class="bg-white rounded-2xl p-8 card-shadow">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Hourly Congestion Trend</h3>
+                <canvas id="trendChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="bg-white rounded-2xl p-8 card-shadow">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Route Map</h3>
+            <div id="map" style="height: 400px; width: 100%; border-radius: 12px;"></div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Map Modal -->
+<div id="mapModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Route Map</h3>
+                <button onclick="closeMap()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalMap" style="height: 500px; width: 100%; border-radius: 12px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if show_result %}
+<script>
+    // Chart.js configurations
+    const ctx1 = document.getElementById('probabilityChart').getContext('2d');
+    const ctx2 = document.getElementById('trendChart').getContext('2d');
+
+    // Probability Chart
+    const probabilityChart = new Chart(ctx1, {
+        type: 'pie',
+        data: {
+            labels: ['Low', 'Medium', 'High'],
+            datasets: [{
+                data: {{ result.probabilities|safe }},
+                backgroundColor: [
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(251, 191, 36, 0.8)',
+                    'rgba(239, 68, 68, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(34, 197, 94, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(239, 68, 68, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Trend Chart
+    const trendChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 24 }, (_, i) => i + ':00'),
+            datasets: [{
+                label: 'Congestion Level',
+                data: Array.from({ length: 24 }, (_, i) => {
+                    if ((i >= 8 && i <= 10) || (i >= 17 && i <= 19)) return Math.random() * 30 + 70;
+                    if ((i >= 7 && i <= 11) || (i >= 16 && i <= 20)) return Math.random() * 20 + 50;
+                    return Math.random() * 30 + 20;
+                }),
+                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Map initialization
+    let map, modalMap;
+    const sourceLat = {{ prediction.source_lat }};
+    const sourceLon = {{ prediction.source_lon }};
+    const destLat = {{ prediction.dest_lat }};
+    const destLon = {{ prediction.dest_lon }};
+
+    function initMap() {
+        // Main map
+        map = L.map('map').setView([(sourceLat + destLat) / 2, (sourceLon + destLon) / 2], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Add markers
+        L.marker([sourceLat, sourceLon]).addTo(map)
+            .bindPopup('Source: {{ prediction.source|escapejs }}')
+            .openPopup();
+
+        L.marker([destLat, destLon]).addTo(map)
+            .bindPopup('Destination: {{ prediction.destination|escapejs }}');
+
+        // Add route line
+        L.polyline([[sourceLat, sourceLon], [destLat, destLon]], {
+            color: 'blue',
+            weight: 3,
+            opacity: 0.7
+        }).addTo(map);
+    }
+
+    function showMap() {
+        document.getElementById('mapModal').classList.remove('hidden');
+
+        // Initialize modal map
+        setTimeout(() => {
+            modalMap = L.map('modalMap').setView([(sourceLat + destLat) / 2, (sourceLon + destLon) / 2], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(modalMap);
+
+            L.marker([sourceLat, sourceLon]).addTo(modalMap)
+                .bindPopup('Source: {{ prediction.source|escapejs }}')
+                .openPopup();
+
+            L.marker([destLat, destLon]).addTo(modalMap)
+                .bindPopup('Destination: {{ prediction.destination|escapejs }}');
+
+            L.polyline([[sourceLat, sourceLon], [destLat, destLon]], {
+                color: 'blue',
+                weight: 3,
+                opacity: 0.7
+            }).addTo(modalMap);
+        }, 100);
+    }
+
+    function closeMap() {
+        document.getElementById('mapModal').classList.add('hidden');
+        if (modalMap) {
+            modalMap.remove();
+        }
+    }
+
+    function downloadPDF() {
+        // Create a simple PDF download using jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(20);
+        doc.text('Traffic Prediction Report', 20, 30);
+        
+        doc.setFontSize(12);
+        doc.text('City: {{ prediction.city|escapejs }}', 20, 50);
+        doc.text('Source: {{ prediction.source|escapejs }}', 20, 60);
+        doc.text('Destination: {{ prediction.destination|escapejs }}', 20, 70);
+        doc.text('Distance: {{ prediction.distance_km|floatformat:1 }} km', 20, 80);
+        doc.text('Congestion Level: {{ prediction.congestion_level|escapejs }}', 20, 90);
+        doc.text('Recommended Mode: {{ prediction.suggested_mode|escapejs }}', 20, 100);
+        doc.text('Weather: {{ prediction.weather|escapejs }}', 20, 110);
+        doc.text('Day Type: {{ prediction.day_type|title|escapejs }}', 20, 120);
+        
+        doc.save('traffic-prediction-report.pdf');
+    }
+
+    // Initialize map when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        initMap();
+    });
+</script>
+{% endif %}
+{% endblock %}

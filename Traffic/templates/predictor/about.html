@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Traffic Congestion Predictor{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            About Traffic Congestion Predictor
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            A cutting-edge machine learning application that predicts traffic congestion in real-time
+            using advanced algorithms and comprehensive data analysis.
+        </p>
+    </div>
+
+    <!-- ML Workflow Section -->
+    <div class="bg-white rounded-2xl p-8 card-shadow mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Machine Learning Workflow</h2>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Step 1: Data Collection -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl font-bold text-blue-600">1</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Data Collection</h3>
+                <p class="text-gray-600">
+                    Comprehensive traffic data collection from multiple sources including GPS,
+                    traffic sensors, weather APIs, and historical patterns.
+                </p>
+            </div>
+
+            <!-- Step 2: Feature Engineering -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl font-bold text-green-600">2</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Feature Engineering</h3>
+                <p class="text-gray-600">
+                    Extraction and processing of key features: distance, time, weather,
+                    day type, events, and route characteristics.
+                </p>
+            </div>
+
+            <!-- Step 3: Model Training -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl font-bold text-purple-600">3</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Model Training</h3>
+                <p class="text-gray-600">
+                    Advanced ML algorithms trained on extensive datasets to predict
+                    congestion levels with high accuracy.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature Details -->
+        <div class="mt-8 p-6 bg-gray-50 rounded-xl">
+            <h4 class="text-lg font-bold text-gray-900 mb-4">Key Features Used:</h4>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        City and location data
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Distance calculation (Haversine)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Time and day analysis
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Weather conditions
+                    </li>
+                </ul>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Holiday and event detection
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Route type classification
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Historical traffic patterns
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Real-time data integration
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="bg-white rounded-2xl p-8 card-shadow mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Technology Stack</h2>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Backend -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Backend</h3>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Django 5.0.2 (Python Web Framework)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        scikit-learn (Machine Learning)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        SQLite Database
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Geopy (Geocoding)
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Frontend -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Frontend</h3>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Tailwind CSS (Styling)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        HTMX (Interactive Updates)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Chart.js (Data Visualization)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Responsive Design
+                    </li>
+                </ul>
+            </div>
+
+            <!-- APIs & Services -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">APIs & Services</h3>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Nominatim (Geocoding)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        OpenWeather API
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        NewsAPI (Traffic News)
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Folium (Interactive Maps)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="bg-white rounded-2xl p-8 card-shadow mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Features</h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">Real-time Predictions</h4>
+                        <p class="text-sm text-gray-600">Get instant traffic congestion predictions based on current
+                            conditions</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">Interactive Maps</h4>
+                        <p class="text-sm text-gray-600">Visualize routes with detailed maps and congestion overlays</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">Transport Mode Suggestions</h4>
+                        <p class="text-sm text-gray-600">Get personalized recommendations for the best transport mode
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">Data Visualization</h4>
+                        <p class="text-sm text-gray-600">Comprehensive charts and graphs for traffic analysis</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">Traffic News Integration</h4>
+                        <p class="text-sm text-gray-600">Stay updated with latest traffic news and alerts</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900">User Dashboard</h4>
+                        <p class="text-sm text-gray-600">Track your prediction history and save favorite routes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-center text-white">
+        <h2 class="text-2xl font-bold mb-4">Ready to Start Predicting?</h2>
+        <p class="text-blue-100 mb-6">Experience the power of machine learning in traffic prediction</p>
+        <a href="{% url 'predict' %}"
+            class="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-gray-100 transition duration-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+            </svg>
+            Try Prediction Now
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Traffic News - Traffic Congestion Predictor{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Traffic News & Updates
+        </h1>
+        <p class="text-xl text-gray-600">
+            Stay informed with the latest traffic news from major Indian cities
+        </p>
+    </div>
+
+    <!-- City Filter -->
+    <div class="bg-white rounded-2xl p-6 card-shadow mb-8">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 md:mb-0">Filter by City</h2>
+            <div class="flex flex-wrap gap-2">
+                {% for city in cities %}
+                <a href="?city={{ city }}" class="px-4 py-2 rounded-lg text-sm font-medium transition duration-300
+                              {% if selected_city == city %}
+                                  bg-blue-600 text-white
+                              {% else %}
+                                  bg-gray-100 text-gray-700 hover:bg-gray-200
+                              {% endif %}">
+                    {{ city }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- News Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for article in news_articles %}
+        <div class="bg-white rounded-2xl card-shadow hover:shadow-xl transition duration-300 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-gray-500">{{ article.source.name }}</span>
+                    <span class="text-xs text-gray-400">
+                        {{ article.publishedAt|slice:":10" }}
+                    </span>
+                </div>
+
+                <h3 class="text-lg font-bold text-gray-900 mb-3 line-clamp-3">
+                    {{ article.title }}
+                </h3>
+
+                <div class="flex items-center justify-between">
+                    <a href="{{ article.url }}" target="_blank"
+                        class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                        Read More
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </a>
+
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
+                            </path>
+                        </svg>
+                        <span class="text-xs text-gray-400">Traffic News</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
+                </path>
+            </svg>
+            <p class="text-lg text-gray-500">No news articles found for {{ selected_city }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- News Summary -->
+    <div class="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
+        <div class="text-center">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                Traffic News Summary for {{ selected_city }}
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Stay updated with real-time traffic information and plan your journeys better
+            </p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">Real-time Updates</h4>
+                    <p class="text-sm text-gray-600">Get the latest traffic conditions as they happen</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">Verified Sources</h4>
+                    <p class="text-sm text-gray-600">News from trusted and reliable sources</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">Smart Alerts</h4>
+                    <p class="text-sm text-gray-600">Get notified about important traffic updates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
